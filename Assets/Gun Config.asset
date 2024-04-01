@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa8268ae64316444cba6d9abbbb971d5, type: 3}
+  m_Name: Gun Config
+  m_EditorClassIdentifier: 
+  ProjectileSettings: {fileID: 11400000, guid: 956fac32c35fc4548b308675fdef3e41, type: 2}
+  BulletSpawnForce: 50
+  FireRate: 15
+  MaxAmmo: 120
+  Damage: 10
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 449
+  ImpactEffect: {fileID: 100002, guid: 00fedc70b62a31e448e8ccc298257b56, type: 3}
