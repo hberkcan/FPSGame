@@ -7,16 +7,18 @@ using UnityEngine.InputSystem.XR;
 using UnityEngine.Windows;
 
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(PlayerInputController))]
 public class PlayerController : MonoBehaviour
 {
-    private PlayerInput playerInput;
-    private FPSInputs inputs;
+    private PlayerInputController inputs;
     private CharacterController controller;
 
+    [SerializeField] private int maxHealth = 100;
+    private int currentHealth;
+
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float sprintSpeed = 10f;
-    [SerializeField] private float rotationSpeed = 1.5f;
+    [SerializeField] private float moveSpeedMultiplier = 2f;
+    [SerializeField] private float rotationSpeed = 2;
 
     [SerializeField] private float jumpHeight = 1.5f;
     [SerializeField] private float gravity = -15f;
@@ -37,31 +39,16 @@ public class PlayerController : MonoBehaviour
 
     private const float threshold = 0f;
 
-    public static event Action<bool> IsShooting;
+    [SerializeField] private Gun gun;
 
-    private Gun gun;
+    private PlayerTalents playerTalents;
 
     private void Awake()
     {
-        playerInput = GetComponent<PlayerInput>();
-        inputs = GetComponent<FPSInputs>();
+        inputs = GetComponent<PlayerInputController>();
         controller = GetComponent<CharacterController>();
+        playerTalents = GetComponent<PlayerTalents>();
         gun = GetComponentInChildren<Gun>();
-
-        playerInput.currentActionMap.FindAction("Fire").started += PlayerController_started;
-        playerInput.currentActionMap.FindAction("Fire").canceled += PlayerController_canceled;
-    }
-
-    private void PlayerController_canceled(InputAction.CallbackContext obj)
-    {
-        inputs.Fire = false;
-        IsShooting?.Invoke(false);
-    }
-
-    private void PlayerController_started(InputAction.CallbackContext obj)
-    {
-        inputs.Fire = true;
-        IsShooting?.Invoke(true);
     }
 
     private void Update()
@@ -86,7 +73,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
-        float targetSpeed = inputs.Sprint ? sprintSpeed : moveSpeed;
+        float targetSpeed = inputs.Sprint ? moveSpeed * moveSpeedMultiplier : moveSpeed;
 
         if(inputs.Move == Vector2.zero)
             targetSpeed = 0;
@@ -146,5 +133,20 @@ public class PlayerController : MonoBehaviour
 
             transform.Rotate(Vector3.up * rotationVelocity);
         }
+    }
+
+    public void UpgradeMaxHealth(int value)
+    {
+        maxHealth += value;
+    }
+
+    public void UpgradeMoveSpeed(float value) 
+    {
+        moveSpeed += value;
+    }
+
+    public void UpgradeJumpHeight(float value) 
+    {
+        jumpHeight += value;
     }
 }

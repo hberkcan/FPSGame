@@ -5,12 +5,12 @@ using UnityEngine;
 [System.Serializable]
 public class Stat
 {
-    [SerializeField] private int baseValue;
-    private int value;
-    private int modifiers;
+    [SerializeField] private float baseValue;
+    private float value;
+    private float modifiers;
     private bool isDirty = true;
 
-    public int Value
+    public float Value
     {
         get 
         {
@@ -24,20 +24,20 @@ public class Stat
         }
     }
 
-    public Stat(int baseValue)
+    public Stat(float baseValue)
     {
         this.baseValue = baseValue;
     }
 
-    public void IncrementValue(int amount)
+    public void IncrementValue(float amount)
     {
         isDirty = true;
         modifiers += amount;
     }
 
-    private int CalculateFinalValue()
+    private float CalculateFinalValue()
     {
-        int finalValue = baseValue;
+        float finalValue = baseValue;
         finalValue += modifiers;
         return finalValue;
     }

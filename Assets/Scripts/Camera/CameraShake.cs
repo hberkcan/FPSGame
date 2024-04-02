@@ -14,7 +14,7 @@ public class CameraShake : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerController.IsShooting += PlayerController_IsShooting;
+        PlayerInputController.IsShooting += PlayerController_IsShooting;
     }
 
     private void PlayerController_IsShooting(bool isShooting)

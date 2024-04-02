@@ -1,5 +1,5 @@
 {
-    "name": "FPS",
+    "name": "FPSInputs",
     "maps": [
         {
             "name": "Player",
@@ -7,7 +7,7 @@
             "actions": [
                 {
                     "name": "Move",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "f98e89a7-0780-4db7-b362-dcca01a93a7f",
                     "expectedControlType": "Vector2",
                     "processors": "NormalizeVector2",
@@ -16,7 +16,7 @@
                 },
                 {
                     "name": "Look",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "2f35332e-08e0-423d-931e-9fb6e2e19918",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -25,12 +25,12 @@
                 },
                 {
                     "name": "Fire",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "1c2b1faf-56a2-41c7-8c58-83e3ff3c9c97",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Sprint",

@@ -16,6 +16,17 @@ public class Gun : MonoBehaviour, IWeapon
 
     private int currentAmmo;
 
+    private int damage;
+    private int ammoCapacity;
+    public bool CanPierce {  get; set; }
+
+    private void Start()
+    {
+        damage = config.Damage;
+        ammoCapacity = config.AmmoCapacity;
+        CanPierce = config.CanPierce;
+    }
+
     public void Use()
     {
         if (Time.time >= nextTimeToFire)
@@ -42,20 +53,20 @@ public class Gun : MonoBehaviour, IWeapon
         }
     }
 
-    public void AddAmmo(int amount)
-    {
-        currentAmmo += amount;
-        currentAmmo = Mathf.Min(currentAmmo, config.MaxAmmo);
-    }
-
     private void HandleProjectileCollision(Projectile projectile, Collision collision)
     {
         ContactPoint contactPoint = collision.GetContact(0);
 
         if (contactPoint.otherCollider.TryGetComponent(out IDamagable damagable))
         {
+            if (!CanPierce) 
+            {
+                damagable.TakeDamage(damage);
+                return;
+            }
+
             projectile.EntitiesPenetrated++;
-            damagable.TakeDamage(config.Damage);
+            damagable.TakeDamage(damage);
         }
         else 
         {
@@ -69,4 +80,13 @@ public class Gun : MonoBehaviour, IWeapon
     {
         Instantiate(config.ImpactEffect, hitLocation, Quaternion.LookRotation(hitNormal));
     }
+
+    public void AddAmmo(int amount)
+    {
+        currentAmmo += amount;
+        currentAmmo = Mathf.Min(currentAmmo, ammoCapacity);
+    }
+
+    public void UpgradeDamage(int value) => damage += value;
+    public void UpgradeAmmoCapacity(int value) => ammoCapacity += value;
 }
