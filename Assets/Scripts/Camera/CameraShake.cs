@@ -7,6 +7,9 @@ using UnityEngine.InputSystem;
 public class CameraShake : MonoBehaviour
 {
     private CinemachineBasicMultiChannelPerlin channelPerlin;
+    private float shakeAmplitude = 0.1f;
+    private float shakeFrequency = 0.2f;
+
     private void Awake()
     {
         channelPerlin = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
@@ -14,12 +17,12 @@ public class CameraShake : MonoBehaviour
 
     private void OnEnable()
     {
-        PlayerInputController.IsShooting += PlayerController_IsShooting;
+        InputManager.PlayerInputs.IsFiring.AddListener(PlayerInputs_IsFiring);
     }
 
-    private void PlayerController_IsShooting(bool isShooting)
+    private void PlayerInputs_IsFiring(bool isShooting)
     {
-        if (isShooting) { ShakeCamera(0.1f, 0.2f); } else { ShakeCamera(0, 0.2f); }
+        if (isShooting) { ShakeCamera(shakeAmplitude, shakeFrequency); } else { StopCameraShake(); }
     }
     
 
@@ -28,4 +31,6 @@ public class CameraShake : MonoBehaviour
         channelPerlin.m_AmplitudeGain = amplitude;
         channelPerlin.m_FrequencyGain = frequency;
     }
+
+    private void StopCameraShake() => ShakeCamera(0, 0f);
 }

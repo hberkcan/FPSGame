@@ -5,9 +5,11 @@ using UnityEngine;
 public class TalentManager : MonoBehaviour
 {
     [SerializeField] private TalentTreeView talentTreeView;
-    [SerializeField] private PlayerTalents playerTalents;
+    [SerializeField] private PlayerController playerController;
 
     [SerializeField] private List<TalentData> talentDatas;
+
+    public readonly Dictionary<TalentType, Talent> UnlockedTalents = new();
 
     private int talentPoints = 10;
 
@@ -37,30 +39,43 @@ public class TalentManager : MonoBehaviour
         if (!CanAffordTalent(talentData))
             return;
 
-        if (!playerTalents.IsTalentUnlocked(talentData.Type)) 
+        if (!IsTalentUnlocked(talentData.Type)) 
         {
-            UnlockTalent(talentData);
-            Talent talent = playerTalents.UnlockedTalents[talentData.Type];
+            Talent talent = UnlockTalent(talentData);
             int newLevel = ++talent.CurrentLevel;
             talentTreeView.UpdateTalentButtonLevelText(index, newLevel);
             SpendTalentPoints(talentData.Cost);
+            UpgradeStat(talent);
         }
         else
         {
-            Talent talent = playerTalents.UnlockedTalents[talentData.Type];
+            Talent talent = UnlockedTalents[talentData.Type];
 
             if (talent.CurrentLevel < talentData.MaxLevel) 
             {
                 int newLevel = ++talent.CurrentLevel;
                 talentTreeView.UpdateTalentButtonLevelText(index, newLevel);
                 SpendTalentPoints(talentData.Cost);
+                UpgradeStat(talent);
             }
         }
-    } 
+    }
 
-    public void UnlockTalent(TalentData talentData)
+    public Talent UnlockTalent(TalentData talentData)
     {
-        playerTalents.UnlockTalent(talentData.CreateTalent());
+        if (!IsTalentUnlocked(talentData.Type)) 
+        {
+            Talent talent = talentData.CreateTalent();
+            UnlockedTalents.Add(talentData.Type, talent);
+            return talent;
+        }
+
+        return null;
+    }
+
+    public bool IsTalentUnlocked(TalentType talentType)
+    {
+        return UnlockedTalents.ContainsKey(talentType);
     }
 
     public bool CanAffordTalent(TalentData data)
@@ -74,26 +89,27 @@ public class TalentManager : MonoBehaviour
         talentTreeView.UpdateTalentPointsText(talentPoints);
     }
 
-    private void UpgradeStat(TalentType type) 
+    private void UpgradeStat(Talent talent) 
     {
-        switch (type) 
+        switch (talent.Data.Type) 
         {
             case TalentType.Player_Speed:
-                //
+                playerController.UpgradeMoveSpeed(talent.Data.IncrementDatas[talent.CurrentLevel - 1].Increment);
                 break;
             case TalentType.Player_JumpHeight:
-                //
+                playerController.UpgradeJumpHeight(talent.Data.IncrementDatas[talent.CurrentLevel - 1].Increment);
                 break;
             case TalentType.Player_Health:
-                //
+                playerController.UpgradeMaxHealth((int)talent.Data.IncrementDatas[talent.CurrentLevel - 1].Increment);
                 break;
             case TalentType.Gun_Damage:
-                //
+                playerController.UpgradeGunDamage((int)talent.Data.IncrementDatas[talent.CurrentLevel - 1].Increment);
                 break;
             case TalentType.Gun_Ammo_Capacity:
-                //
+                playerController.UpgradeGunAmmoCapacity((int)talent.Data.IncrementDatas[talent.CurrentLevel - 1].Increment);
+                break;
             case TalentType.Gun_Pierce:
-                //
+                playerController.UpgradeGunPierce(true);
                 break;
         }
     }

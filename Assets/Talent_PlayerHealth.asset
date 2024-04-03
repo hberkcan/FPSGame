@@ -16,3 +16,14 @@ MonoBehaviour:
   DisplayName: Health
   Cost: 1
   MaxLevel: 5
+  IncrementDatas:
+  - Level: 1
+    Increment: 10
+  - Level: 2
+    Increment: 15
+  - Level: 3
+    Increment: 20
+  - Level: 4
+    Increment: 25
+  - Level: 5
+    Increment: 30

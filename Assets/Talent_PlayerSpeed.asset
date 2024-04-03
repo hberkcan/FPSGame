@@ -16,3 +16,14 @@ MonoBehaviour:
   DisplayName: Speed
   Cost: 1
   MaxLevel: 5
+  IncrementDatas:
+  - Level: 1
+    Increment: 1
+  - Level: 2
+    Increment: 2
+  - Level: 3
+    Increment: 3
+  - Level: 4
+    Increment: 4
+  - Level: 5
+    Increment: 5

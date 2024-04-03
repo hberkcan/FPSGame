@@ -16,3 +16,14 @@ MonoBehaviour:
   DisplayName: JumpH
   Cost: 1
   MaxLevel: 5
+  IncrementDatas:
+  - Level: 1
+    Increment: 0.2
+  - Level: 2
+    Increment: 0.3
+  - Level: 3
+    Increment: 0.3
+  - Level: 4
+    Increment: 0.4
+  - Level: 5
+    Increment: 0.4

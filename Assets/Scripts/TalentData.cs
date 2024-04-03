@@ -20,6 +20,7 @@ public class TalentData : ScriptableObject
     public string DisplayName;
     public int Cost;
     public int MaxLevel;
+    public List<TalentIncrementData> IncrementDatas;
 
     public Talent CreateTalent()
     {
@@ -37,4 +38,11 @@ public class Talent
         Data = data;
         CurrentLevel = 0;
     }
+}
+
+[Serializable]
+public class TalentIncrementData 
+{
+    public int Level;
+    public float Increment;
 }

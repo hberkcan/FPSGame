@@ -17,21 +17,34 @@ public class PlayerInputController : MonoBehaviour
     [SerializeField] private bool cursorLocked = true;
     [SerializeField] private bool cursorInputForLook = true;
 
-    FPSInputs inputActions;
-
+    private PlayerInput playerInput;
+    private InputAction moveAction;
+    private InputAction lookAction;
+    private InputAction jumpAction;
+    private InputAction sprintAction;
+    private InputAction fireAction;
     private const float buttonPressPoint = 0.5f;
+
+    private void Awake()
+    {
+        playerInput = GetComponent<PlayerInput>();
+    }
 
     private void OnEnable()
     {
-        inputActions = new FPSInputs();
-        inputActions.Enable();
+        moveAction = playerInput.actions.FindAction("Move");
+        lookAction = playerInput.actions.FindAction("Look");
+        jumpAction = playerInput.actions.FindAction("Jump");
+        sprintAction = playerInput.actions.FindAction("Sprint");
+        fireAction = playerInput.actions.FindAction("Fire");
 
-        inputActions.Player.Move.performed += OnMove;
-        inputActions.Player.Look.performed += OnLook;
-        inputActions.Player.Fire.performed += OnFire;
-        inputActions.Player.Fire.canceled += OnFireCanceled;
-        inputActions.Player.Jump.performed += OnJump;
-        inputActions.Player.Sprint.performed += OnSprint;
+
+        moveAction.performed += OnMove;
+        lookAction.performed += OnLook;
+        jumpAction.performed += OnJump;
+        sprintAction.performed += OnSprint;
+        fireAction.performed += OnFire;
+        fireAction.canceled += OnFireCanceled;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -43,6 +56,16 @@ public class PlayerInputController : MonoBehaviour
     {
         if(cursorInputForLook)
             Look = context.ReadValue<Vector2>();
+    }
+
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        Sprint = context.ReadValue<float>() >= buttonPressPoint;
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        Jump = context.ReadValue<float>() >= buttonPressPoint;
     }
 
     public void OnFire(InputAction.CallbackContext context)
@@ -57,19 +80,9 @@ public class PlayerInputController : MonoBehaviour
         IsShooting?.Invoke(false);
     }
 
-    public void OnSprint(InputAction.CallbackContext context)
-    {
-        Sprint = context.ReadValue<float>() >= buttonPressPoint;
-    }
-
-    public void OnJump(InputAction.CallbackContext context)
-    {
-        Jump = context.ReadValue<float>() >= buttonPressPoint;
-    }
-
     private void OnApplicationFocus(bool hasFocus)
     {
-        //SetCursorState(cursorLocked);
+        SetCursorState(cursorLocked);
     }
 
     private void SetCursorState(bool newState)

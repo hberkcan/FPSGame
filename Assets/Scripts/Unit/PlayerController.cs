@@ -7,10 +7,8 @@ using UnityEngine.InputSystem.XR;
 using UnityEngine.Windows;
 
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(PlayerInputController))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamagable
 {
-    private PlayerInputController inputs;
     private CharacterController controller;
 
     [SerializeField] private int maxHealth = 100;
@@ -30,24 +28,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject cameraTarget;
     [SerializeField] private float bottomClamp = -90f;
     [SerializeField] private float topClamp = 60f;
+    private float cameraTargetPitch;
 
     private float verticalVelocity;
     private float rotationVelocity;
-    private float terminalVelocity = 50f;
-
-    private float cameraTargetPitch;
+    private readonly float terminalVelocity = 50f;
 
     private const float threshold = 0f;
 
     [SerializeField] private Gun gun;
 
-    private PlayerTalents playerTalents;
+    public event Action OnDie;
+    public event Action<int> OnTakeDamage;
 
     private void Awake()
     {
-        inputs = GetComponent<PlayerInputController>();
         controller = GetComponent<CharacterController>();
-        playerTalents = GetComponent<PlayerTalents>();
         gun = GetComponentInChildren<Gun>();
     }
 
@@ -67,23 +63,22 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-        if(inputs.Fire)
+        if(InputManager.PlayerInputs.IsFiring.Value)
             gun.Use();
     }
 
     private void HandleMovement()
     {
-        float targetSpeed = inputs.Sprint ? moveSpeed * moveSpeedMultiplier : moveSpeed;
+        float targetSpeed = InputManager.PlayerInputs.IsSprinting ? moveSpeed * moveSpeedMultiplier : moveSpeed;
 
-        if(inputs.Move == Vector2.zero)
+        if(InputManager.PlayerInputs.Move == Vector2.zero)
             targetSpeed = 0;
 
+        Vector3 inputDirection = new(InputManager.PlayerInputs.Move.x, 0.0f, InputManager.PlayerInputs.Move.y);
 
-        Vector3 inputDirection = new(inputs.Move.x, 0.0f, inputs.Move.y);
-
-        if (inputs.Move != Vector2.zero)
+        if (InputManager.PlayerInputs.Move != Vector2.zero)
         {
-            inputDirection = transform.right * inputs.Move.x + transform.forward * inputs.Move.y;
+            inputDirection = transform.right * InputManager.PlayerInputs.Move.x + transform.forward * InputManager.PlayerInputs.Move.y;
         }
 
         controller.Move((targetSpeed * inputDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime);
@@ -98,14 +93,14 @@ public class PlayerController : MonoBehaviour
                 verticalVelocity = -5f;
             }
 
-            if (inputs.Jump)
+            if (InputManager.PlayerInputs.IsJumping)
             {
                 verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
             }
         }
         else
         {
-            inputs.Jump = false;
+            InputManager.PlayerInputs.IsJumping = false;
         }
 
         if (verticalVelocity < terminalVelocity)
@@ -122,10 +117,10 @@ public class PlayerController : MonoBehaviour
 
     private void CameraRotation()
     {
-        if (inputs.Look.sqrMagnitude >= threshold)
+        if (InputManager.PlayerInputs.Look.sqrMagnitude >= threshold)
         {
-            cameraTargetPitch += inputs.Look.y * rotationSpeed;
-            rotationVelocity = inputs.Look.x * rotationSpeed;
+            cameraTargetPitch += InputManager.PlayerInputs.Look.y * rotationSpeed;
+            rotationVelocity = InputManager.PlayerInputs.Look.x * rotationSpeed;
 
             cameraTargetPitch = Helpers.ClampAngle(cameraTargetPitch, bottomClamp, topClamp);
 
@@ -148,5 +143,49 @@ public class PlayerController : MonoBehaviour
     public void UpgradeJumpHeight(float value) 
     {
         jumpHeight += value;
+    }
+
+    public void UpgradeGunDamage(int value) 
+    {
+        gun.UpgradeDamage(value);
+    }
+
+    public void UpgradeGunAmmoCapacity(int value) 
+    {
+        gun.UpgradeAmmoCapacity(value);
+    }
+
+    public void UpgradeGunPierce(bool value) 
+    {
+        gun.CanPierce = value;
+    }
+
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(currentHealth, 0);
+
+        if (currentHealth == 0)
+        {
+            OnDie?.Invoke();
+        }
+
+        OnTakeDamage?.Invoke(-damage);
+    }
+
+    public float GetHealthPercentage()
+    {
+        return (float)currentHealth / maxHealth;
+    }
+
+    public void AddHealth(int health)
+    {
+        currentHealth += health;
+        currentHealth = Mathf.Min(currentHealth, maxHealth);
+    }
+
+    public void AddAmmo(int ammo) 
+    {
+        gun.AddAmmo(ammo);
     }
 }

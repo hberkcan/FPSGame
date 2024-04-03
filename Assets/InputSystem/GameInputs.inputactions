@@ -1,5 +1,5 @@
 {
-    "name": "FPSInputs",
+    "name": "GameInputs",
     "maps": [
         {
             "name": "Player",
@@ -12,7 +12,7 @@
                     "expectedControlType": "Vector2",
                     "processors": "NormalizeVector2",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Look",
@@ -21,16 +21,16 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Fire",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "1c2b1faf-56a2-41c7-8c58-83e3ff3c9c97",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Sprint",
@@ -807,6 +807,34 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TrackedDeviceOrientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "id": "00374ffa-07b3-4be6-88fd-e1e8ec6c2d41",
+            "actions": [
+                {
+                    "name": "TalentTreeMenu",
+                    "type": "Button",
+                    "id": "b4994abb-dbab-4605-b8fc-64ce63d43093",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "337ba756-45af-4713-bde0-86500eb24b59",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "TalentTreeMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

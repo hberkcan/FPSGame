@@ -16,3 +16,4 @@ MonoBehaviour:
   DisplayName: Pierce
   Cost: 3
   MaxLevel: 1
+  IncrementDatas: []
