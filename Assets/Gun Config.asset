@@ -15,9 +15,10 @@ MonoBehaviour:
   ProjectileSettings: {fileID: 11400000, guid: 956fac32c35fc4548b308675fdef3e41, type: 2}
   BulletSpawnForce: 50
   FireRate: 15
-  MaxAmmo: 120
+  AmmoCapacity: 120
   Damage: 10
+  CanPierce: 0
   HitMask:
     serializedVersion: 2
-    m_Bits: 449
+    m_Bits: 961
   ImpactEffect: {fileID: 100002, guid: 00fedc70b62a31e448e8ccc298257b56, type: 3}

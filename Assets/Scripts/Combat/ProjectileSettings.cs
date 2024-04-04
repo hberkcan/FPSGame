@@ -6,4 +6,9 @@ using UnityEngine;
 public class ProjectileSettings : PoolSettings<Projectile>
 {
     public float Duration = 2f;
+
+    public override void OnGet(Projectile go)
+    {
+        //
+    }
 }

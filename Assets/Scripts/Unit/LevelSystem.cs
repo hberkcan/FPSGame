@@ -3,29 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+[Serializable]
 public class LevelSystem
 {
-    public int CurrentLevel { get; private set; } = 1;
-    public int CurrentExperience { get; private set; } = 0;
+    [SerializeField] private AnimationCurve levelCurve;
+    [field: SerializeField] public int CurrentLevel { get; private set; } = 0;
+    [field: SerializeField] public int CurrentExperience { get; private set; } = 0;
     public int XpRequiredForNextLevel => GetXPRequiredForNextLevel();
-    public double XPPercentage => GetXPPercentage();
-
-    private readonly int offset = 5;
-    private readonly float slope = 5f;
-    private readonly int levelCap = 10;
+    public float XPPercentage => GetXPPercentage();
+    
+    [SerializeField] private int levelCap = 20;
+    private const int levelCurveMultiplier = 10;
 
     public bool AddXP(int amount)
     {
         if (CurrentLevel == levelCap)
             return false;
 
+        int previousLevel = CurrentLevel;
         CurrentExperience += amount;
 
-        int newLevel = Mathf.Min(Mathf.FloorToInt((CurrentExperience - offset) / slope) + 2, levelCap);
-        bool leveledUp = newLevel != CurrentLevel;
+        while(CurrentExperience >= GetXPRequiredForNextLevel()) 
+        {
+            CurrentLevel++;
+        }
 
-        CurrentLevel = newLevel;
-        return leveledUp;
+        return CurrentLevel > previousLevel;
     }
 
     public void SetLevel(int level)
@@ -35,9 +38,9 @@ public class LevelSystem
         AddXP(XPForLevel(level));
     }
 
-    private int XPForLevel(int level)
+    public int XPForLevel(int level)
     {
-        return Mathf.FloorToInt((Mathf.Min(level, levelCap) - 1) * slope + offset);
+        return (int)(levelCurve.Evaluate(level) * levelCurveMultiplier);
     }
 
     public int GetXPRequiredForNextLevel() 
@@ -45,19 +48,17 @@ public class LevelSystem
         if (CurrentLevel == levelCap)
             return int.MaxValue;
 
-        return XPForLevel(CurrentLevel + 1) - CurrentExperience;
+        return XPForLevel(CurrentLevel + 1);
     }
 
     public void Reset()
     {
-        CurrentLevel = 1;
+        CurrentLevel = 0;
         CurrentExperience = 0;
     }
 
-    public double GetXPPercentage()
+    public float GetXPPercentage()
     {
-        double x = CurrentExperience / slope;
-        x -= Math.Floor(x);
-        return Math.Round(x, 1) * 100;
+        return (float)CurrentExperience / XPForLevel(CurrentLevel + 1);
     }
 }

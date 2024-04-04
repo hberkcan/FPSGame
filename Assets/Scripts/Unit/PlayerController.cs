@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.Windows;
+using UnityEngine.InputSystem.HID;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour, IDamagable
@@ -13,6 +11,8 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     [SerializeField] private int maxHealth = 100;
     private int currentHealth;
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
 
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float moveSpeedMultiplier = 2f;
@@ -37,14 +37,34 @@ public class PlayerController : MonoBehaviour, IDamagable
     private const float threshold = 0f;
 
     [SerializeField] private Gun gun;
+    public int CurrentAmmo => gun.CurrentAmmo;
+    public int MaxAmmo => gun.MaxAmmo;
 
-    public event Action OnDie;
-    public event Action<int> OnTakeDamage;
+    [SerializeField] private LevelSystem levelSystem;
+    public int CurrentLevel => levelSystem.CurrentLevel;
+    public float XPPercentage => levelSystem.XPPercentage;
+
+    private int killScore = 0;
+    public int KillScore => killScore;
+
+    public static event Action OnPlayerDie;
+    public event Action OnHealthChange;
+    public event Action OnXPGain;
+    public event Action OnAmmoChange;
+    public event Action OnGetKill;
 
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
         gun = GetComponentInChildren<Gun>();
+
+        currentHealth = maxHealth;
+    }
+
+    private void OnEnable()
+    {
+        gun.OnShoot += Gun_OnShoot;
+        EnemyController.OnAnyEnemyDie += EnemyController_OnAnyEnemyDie;
     }
 
     private void Update()
@@ -61,10 +81,20 @@ public class PlayerController : MonoBehaviour, IDamagable
         CameraRotation();
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.TryGetComponent(out ICollectable collectible))
+        {
+            collectible.OnCollect(this);
+        }
+    }
+
     private void Shoot()
     {
-        if(InputManager.PlayerInputs.IsFiring.Value)
+        if (InputManager.PlayerInputs.IsFiring.Value) 
+        {
             gun.Use();
+        }
     }
 
     private void HandleMovement()
@@ -81,7 +111,13 @@ public class PlayerController : MonoBehaviour, IDamagable
             inputDirection = transform.right * InputManager.PlayerInputs.Move.x + transform.forward * InputManager.PlayerInputs.Move.y;
         }
 
-        controller.Move((targetSpeed * inputDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime);
+        Vector3 target = (targetSpeed * inputDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime;
+        controller.Move(target);
+
+        Vector3 pos = transform.position;
+        pos.x = Mathf.Clamp(pos.x, -50, 50);
+        pos.z = Mathf.Clamp(pos.z, -50, 50);
+        transform.position = pos;
     }
 
     private void HandleJumpAndGravity()
@@ -95,6 +131,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
             if (InputManager.PlayerInputs.IsJumping)
             {
+                //required velocity for desired height
                 verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
             }
         }
@@ -132,7 +169,10 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void UpgradeMaxHealth(int value)
     {
+        float previousPercentage = GetHealthPercentage();
         maxHealth += value;
+        currentHealth = Mathf.CeilToInt(maxHealth * previousPercentage);
+        OnHealthChange?.Invoke();
     }
 
     public void UpgradeMoveSpeed(float value) 
@@ -167,10 +207,10 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         if (currentHealth == 0)
         {
-            OnDie?.Invoke();
+            OnPlayerDie?.Invoke();
         }
 
-        OnTakeDamage?.Invoke(-damage);
+        OnHealthChange?.Invoke();
     }
 
     public float GetHealthPercentage()
@@ -182,10 +222,30 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         currentHealth += health;
         currentHealth = Mathf.Min(currentHealth, maxHealth);
+        OnHealthChange?.Invoke();
     }
 
     public void AddAmmo(int ammo) 
     {
         gun.AddAmmo(ammo);
+        OnAmmoChange?.Invoke();
+    }
+
+    public void AddExperience(int experience) 
+    {
+        levelSystem.AddXP(experience);
+        OnXPGain?.Invoke();
+    }
+
+    private void Gun_OnShoot()
+    {
+        OnAmmoChange?.Invoke();
+    }
+
+    private void EnemyController_OnAnyEnemyDie(EnemyConfig config)
+    {
+        AddExperience(config.EXPReward);
+        killScore++;
+        OnGetKill?.Invoke();
     }
 }

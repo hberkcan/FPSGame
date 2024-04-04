@@ -29,21 +29,21 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Move"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""f98e89a7-0780-4db7-b362-dcca01a93a7f"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": ""NormalizeVector2"",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Look"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""2f35332e-08e0-423d-931e-9fb6e2e19918"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Fire"",
@@ -58,7 +58,7 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""name"": ""Sprint"",
                     ""type"": ""PassThrough"",
                     ""id"": ""5917e4b8-2d40-421c-894c-4c06d8a11879"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false

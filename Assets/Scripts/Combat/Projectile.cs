@@ -7,7 +7,6 @@ public class Projectile : MonoBehaviour, IPoolObject<ProjectileSettings>
 {
     private Rigidbody rb;
     private float duration;
-
     public ProjectileSettings Settings { get; set; }
 
     private TrailRenderer trailRenderer;
@@ -21,11 +20,6 @@ public class Projectile : MonoBehaviour, IPoolObject<ProjectileSettings>
         trailRenderer = GetComponent<TrailRenderer>();
     }
 
-    private void OnDisable()
-    {
-        trailRenderer.Clear();
-    }
-
     private void Update()
     {
         duration -= Time.deltaTime;
@@ -34,19 +28,6 @@ public class Projectile : MonoBehaviour, IPoolObject<ProjectileSettings>
         {
             ReturnToPool();
         }
-
-        //if(time < 1)
-        //{
-        //    transform.position = Vector3.Lerp(startPosition, destination, time);
-        //    time += Time.deltaTime / 0.1f;
-        //}
-        //else 
-        //{
-        //    transform.position = destination;
-        //    Instantiate(hitEffect, transform.position, Quaternion.identity);
-        //    ReturnToPool();
-        //    Debug.Log("HIT");
-        //}
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -56,14 +37,15 @@ public class Projectile : MonoBehaviour, IPoolObject<ProjectileSettings>
 
     public void Initialize(Vector3 position)
     {
+        transform.position = position;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        trailRenderer.enabled = false;
         rb.position = position;
-        trailRenderer.enabled = true;
-        duration = Settings.Duration;
-        OnCollision = null;
+        rb.rotation = Quaternion.Euler(Vector2.zero);
+        trailRenderer.Clear();
         EntitiesPenetrated = 0;
+
+        gameObject.SetActive(true);
     }
 
     public void SetSettings(PoolSettings settings) => Settings = (ProjectileSettings)settings;

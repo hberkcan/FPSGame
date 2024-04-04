@@ -18,12 +18,12 @@ MonoBehaviour:
   MaxLevel: 5
   IncrementDatas:
   - Level: 1
-    Increment: 0.2
+    Increment: 0.3
   - Level: 2
-    Increment: 0.3
+    Increment: 0.5
   - Level: 3
-    Increment: 0.3
+    Increment: 0.7
   - Level: 4
-    Increment: 0.4
+    Increment: 0.9
   - Level: 5
-    Increment: 0.4
+    Increment: 1.1
