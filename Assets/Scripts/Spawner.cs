@@ -46,8 +46,9 @@ public class Spawner : MonoBehaviour
         healthTimer = new CountdownTimer(timeBetweenSpawns);
         healthTimer.Start();
         
-        mesh = CreateMesh();
         path = new NavMeshPath();
+
+        InitializeMesh();
     }
 
     private void Update()
@@ -118,17 +119,13 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    private Mesh CreateMesh() 
+    private void InitializeMesh() 
     {
         NavMeshTriangulation triangles = NavMesh.CalculateTriangulation();
-        var mesh = new Mesh();
+        mesh = new Mesh();
         mesh.vertices = triangles.vertices;
         mesh.triangles = triangles.indices;
-        return mesh;
-    }
 
-    private Vector3 GetRandomPointOnMesh(Mesh mesh)
-    {
         sizes = GetTriSizes(mesh.triangles, mesh.vertices);
         cumulativeSizes = new float[sizes.Length];
         total = 0;
@@ -138,7 +135,10 @@ public class Spawner : MonoBehaviour
             total += sizes[i];
             cumulativeSizes[i] = total;
         }
+    }
 
+    private Vector3 GetRandomPointOnMesh(Mesh mesh)
+    {
         float randomsample = Random.value * total;
 
         int triIndex = -1;
