@@ -15,6 +15,14 @@ public class PlayerInfoManager : MonoBehaviour
         playerController.OnAmmoChange += PlayerController_OnAmmoChange;
     }
 
+    private void OnDisable()
+    {
+        playerController.OnHealthChange -= PlayerController_OnHealthChange;
+        playerController.OnXPGain -= PlayerController_OnXPGain;
+        playerController.OnGetKill -= PlayerController_OnGetKill;
+        playerController.OnAmmoChange -= PlayerController_OnAmmoChange;
+    }
+
     private void PlayerController_OnAmmoChange()
     {
         playerInfoView.UpdateAmmo(playerController.CurrentAmmo);

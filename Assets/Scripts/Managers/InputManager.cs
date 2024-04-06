@@ -32,6 +32,13 @@ public class InputManager : MonoBehaviour
         PlayerController.OnPlayerDie += PlayerController_OnPlayerDie;
     }
 
+    private void OnDisable()
+    {
+        inputs.Menu.TalentTreeMenu.performed -= OnTalentTreeButtonPressed;
+
+        PlayerController.OnPlayerDie -= PlayerController_OnPlayerDie;
+    }
+
     private void PlayerController_OnPlayerDie()
     {
         inputs.Player.Disable();

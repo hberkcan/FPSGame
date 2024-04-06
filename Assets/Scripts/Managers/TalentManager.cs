@@ -18,6 +18,11 @@ public class TalentManager : MonoBehaviour
         playerController.OnGetKill += PlayerController_OnGetKill;
     }
 
+    private void OnDisable()
+    {
+        playerController.OnGetKill -= PlayerController_OnGetKill;
+    }
+
     private void PlayerController_OnGetKill()
     {
         talentPoints++;

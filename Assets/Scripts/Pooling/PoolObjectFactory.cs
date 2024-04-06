@@ -34,14 +34,3 @@ public class ProjectileFactory : PoolObjectFactory<Projectile>
     public override Projectile Spawn(PoolSettings<Projectile> settings) => GetPoolFor(settings)?.Get();
     public override void ReturnToPool(Projectile poolObject) => GetPoolFor(poolObject.Settings)?.Release(poolObject);
 }
-
-public static class Factory
-{
-    public static ProjectileFactory ProjectileFactory { get; private set; }
-
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void OnBeforeSceneLoad()
-    {
-        ProjectileFactory = new();
-    }
-}

@@ -20,6 +20,11 @@ public class CameraShake : MonoBehaviour
         InputManager.PlayerInputs.IsFiring.AddListener(PlayerInputs_IsFiring);
     }
 
+    private void OnDisable()
+    {
+        InputManager.PlayerInputs.IsFiring.RemoveListener(PlayerInputs_IsFiring);
+    }
+
     private void PlayerInputs_IsFiring(bool isShooting)
     {
         if (isShooting) { ShakeCamera(shakeAmplitude, shakeFrequency); } else { StopCameraShake(); }

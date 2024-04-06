@@ -70,7 +70,7 @@ public class Gun : MonoBehaviour, IWeapon
 
     private void LaunchNewProjectile(Vector3 origin, Vector3 direction)
     {
-        Projectile projectile = Factory.ProjectileFactory.Spawn(config.ProjectileSettings);
+        Projectile projectile = Factory.Instance.ProjectileFactory.Spawn(config.ProjectileSettings);
         projectile.Initialize(origin);
         projectile.OnCollision = HandleProjectileCollision;
         projectile.Launch(direction * config.BulletSpawnForce);

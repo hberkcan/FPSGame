@@ -67,6 +67,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         EnemyController.OnAnyEnemyDie += EnemyController_OnAnyEnemyDie;
     }
 
+    private void OnDisable()
+    {
+        EnemyController.OnAnyEnemyDie -= EnemyController_OnAnyEnemyDie;
+    }
+
     private void Update()
     {
         HandleMovement();

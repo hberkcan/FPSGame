@@ -31,6 +31,11 @@ public class Spawner : MonoBehaviour
         EnemyController.OnAnyEnemyDie += EnemyController_OnAnyEnemyDie;
     }
 
+    private void OnDisable()
+    {
+        EnemyController.OnAnyEnemyDie -= EnemyController_OnAnyEnemyDie;
+    }
+
     private void EnemyController_OnAnyEnemyDie(EnemyConfig obj)
     {
         enemyCount--;

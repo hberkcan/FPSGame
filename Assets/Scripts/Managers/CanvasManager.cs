@@ -15,6 +15,12 @@ public class CanvasManager : MonoBehaviour
         PlayerController.OnPlayerDie += PlayerController_OnPlayerDie;
     }
 
+    private void OnDisable()
+    {
+        InputManager.MenuInputs.IsTalentTreeViewOpen.RemoveListener(InputManager_TalentTreeMenuStatusChanged);
+        PlayerController.OnPlayerDie -= PlayerController_OnPlayerDie;
+    }
+
     private void PlayerController_OnPlayerDie()
     {
         gameOverView.Open();

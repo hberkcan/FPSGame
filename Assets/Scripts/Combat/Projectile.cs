@@ -54,7 +54,7 @@ public class Projectile : MonoBehaviour, IPoolObject<ProjectileSettings>
     {
         duration = Settings.Duration;
         OnCollision = null;
-        Factory.ProjectileFactory.ReturnToPool(this);
+        Factory.Instance.ProjectileFactory.ReturnToPool(this);
     }
 
     public void Launch(Vector3 startForce)
