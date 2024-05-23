@@ -1,4 +1,4 @@
 # FPSGame
 #
-![Demo](Media/fpsgameplay.mp4)
+![Video](Media/fpsgameplay.mp4)
 
