@@ -7,7 +7,7 @@ using UnityEngine;
 public class AmmoCollectible : MonoBehaviour, ICollectable
 {
     [SerializeField] private int amount = 10;
-    [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private TextMeshPro text;
     public Action<CollectibleType> OnDestroy { get; set; }
     [field : SerializeField] public CollectibleType CollectibleType { get; set; }
 
@@ -31,6 +31,6 @@ public class AmmoCollectible : MonoBehaviour, ICollectable
 
     private void Update()
     {
-        text.text = $"{amount} Ammo";
+        text.text = $"{amount}";
     }
 }

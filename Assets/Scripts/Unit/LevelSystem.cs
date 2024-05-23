@@ -25,6 +25,7 @@ public class LevelSystem
 
         while(CurrentExperience >= GetXPRequiredForNextLevel()) 
         {
+            CurrentExperience -= GetXPRequiredForNextLevel();
             CurrentLevel++;
         }
 

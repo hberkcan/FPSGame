@@ -9,7 +9,7 @@ public class PlayerInfoManager : MonoBehaviour
 
     private void OnEnable()
     {
-        playerController.OnHealthChange += PlayerController_OnHealthChange;
+        PlayerController.OnHealthChange += PlayerController_OnHealthChange;
         playerController.OnXPGain += PlayerController_OnXPGain;
         playerController.OnGetKill += PlayerController_OnGetKill;
         playerController.OnAmmoChange += PlayerController_OnAmmoChange;
@@ -17,7 +17,7 @@ public class PlayerInfoManager : MonoBehaviour
 
     private void OnDisable()
     {
-        playerController.OnHealthChange -= PlayerController_OnHealthChange;
+        PlayerController.OnHealthChange -= PlayerController_OnHealthChange;
         playerController.OnXPGain -= PlayerController_OnXPGain;
         playerController.OnGetKill -= PlayerController_OnGetKill;
         playerController.OnAmmoChange -= PlayerController_OnAmmoChange;
@@ -25,7 +25,7 @@ public class PlayerInfoManager : MonoBehaviour
 
     private void PlayerController_OnAmmoChange()
     {
-        playerInfoView.UpdateAmmo(playerController.CurrentAmmo);
+        playerInfoView.UpdateAmmo(playerController.CurrentAmmo, playerController.MaxAmmo);
     }
 
     private void PlayerController_OnGetKill()
@@ -38,16 +38,16 @@ public class PlayerInfoManager : MonoBehaviour
         playerInfoView.UpdateExp(playerController.XPPercentage, playerController.CurrentLevel);
     }
 
-    private void PlayerController_OnHealthChange()
+    private void PlayerController_OnHealthChange(int change, float normalizedHealth)
     {
-        playerInfoView.UpdateHealth(playerController.GetHealthPercentage(), playerController.CurrentHealth);
+        playerInfoView.UpdateHealth(playerController.GetHealthPercentage(), playerController.CurrentHealth, playerController.MaxHealth);
     }
 
     private void Start()
     {
-        playerInfoView.UpdateHealth(playerController.GetHealthPercentage(), playerController.CurrentHealth);
+        playerInfoView.UpdateHealth(playerController.GetHealthPercentage(), playerController.CurrentHealth, playerController.MaxHealth);
         playerInfoView.UpdateExp(playerController.XPPercentage, playerController.CurrentLevel);
-        playerInfoView.UpdateAmmo(playerController.CurrentAmmo);
+        playerInfoView.UpdateAmmo(playerController.CurrentAmmo, playerController.MaxAmmo);
         playerInfoView.UpdateKills(playerController.KillScore);
     }
 }

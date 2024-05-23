@@ -15,13 +15,14 @@ MonoBehaviour:
   Health: 100
   AttackDamage: 2
   WalkSpeed: 2.2
-  RunSpeed: 3
-  EXPReward: 10
+  RunSpeed: 3.4
+  EXPReward: 100
   LingerTime: 5
   WanderRadius: 10
   TimeBetweenAttacks: 0.5
-  detectionAngle: 90
-  detectionRadius: 25
-  innerDetectionRadius: 10
-  detectionCooldown: 0.5
-  attackRange: 15
+  DetectionAngle: 90
+  DetectionRadius: 25
+  InnerDetectionRadius: 15
+  DetectionCooldown: 0.5
+  AttackRange: 20
+  AgroTime: 3

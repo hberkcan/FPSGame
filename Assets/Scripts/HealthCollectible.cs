@@ -8,9 +8,9 @@ using UnityEngine;
 public class HealthCollectible : MonoBehaviour, ICollectable
 {
     [SerializeField] private int amount = 10;
-    [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private TextMeshPro text;
     public Action<CollectibleType> OnDestroy { get; set; }
-    public CollectibleType CollectibleType { get; set; }
+    [field: SerializeField] public CollectibleType CollectibleType { get; set; }
 
     public void OnCollect(PlayerController playerController)
     {
@@ -24,6 +24,6 @@ public class HealthCollectible : MonoBehaviour, ICollectable
 
     private void Update()
     {
-        text.text = $"{amount} Health";
+        text.text = $"{amount}";
     }
 }

@@ -44,7 +44,8 @@ public class Projectile : MonoBehaviour, IPoolObject<ProjectileSettings>
         rb.rotation = Quaternion.Euler(Vector2.zero);
         trailRenderer.Clear();
         EntitiesPenetrated = 0;
-
+        duration = Settings.Duration;
+        trailRenderer.AddPosition(position);
         gameObject.SetActive(true);
     }
 
@@ -52,7 +53,6 @@ public class Projectile : MonoBehaviour, IPoolObject<ProjectileSettings>
 
     public void ReturnToPool()
     {
-        duration = Settings.Duration;
         OnCollision = null;
         Factory.Instance.ProjectileFactory.ReturnToPool(this);
     }

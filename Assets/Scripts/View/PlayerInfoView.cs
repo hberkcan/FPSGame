@@ -14,16 +14,16 @@ public class PlayerInfoView : View
     [SerializeField] private TextMeshProUGUI ammoText;
     [SerializeField] private TextMeshProUGUI killsText;
 
-    public void UpdateHealth(float normalizedValue, int currentHealth) 
+    public void UpdateHealth(float normalizedValue, int currentHealth, int maxHealth) 
     {
         healthBarFill.fillAmount = normalizedValue;
-        healthText.text = $"HP : {currentHealth}";
+        healthText.text = $"{currentHealth}/{maxHealth}";
     }
     public void UpdateExp(float normalizedValue, int Level) 
     {
         expBarFill.fillAmount = normalizedValue;
-        expText.text = $"Level : {Level}";
+        expText.text = $"{Level}";
     }
-    public void UpdateAmmo(int value) => ammoText.text = $"Ammo : {value}";
+    public void UpdateAmmo(int currentAmmo, int maxAmmo) => ammoText.text = $"Ammo : {currentAmmo}/{maxAmmo}";
     public void UpdateKills(int value) => killsText.text = $"Kills : {value}";
 }

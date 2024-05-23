@@ -6,12 +6,10 @@ using UnityEngine.AI;
 public class ChaseState : EnemyBaseState
 {
     readonly NavMeshAgent agent;
-    readonly Transform player;
 
-    public ChaseState(EnemyController enemy, UnitAnimationBehaviour animationBehaviour, NavMeshAgent agent, Transform player) : base(enemy, animationBehaviour)
+    public ChaseState(EnemyController enemy, UnitAnimationBehaviour animationBehaviour, NavMeshAgent agent) : base(enemy, animationBehaviour)
     {
         this.agent = agent;
-        this.player = player;
     }
 
     public override void OnEnter()
@@ -20,22 +18,9 @@ public class ChaseState : EnemyBaseState
         animationBehaviour.Run();
     }
 
-    public override void OnExit()
-    {
-        //
-    }
-
     public override void Update()
     {
-        agent.SetDestination(player.position);
-
-        if (!enemy.CanDetectPlayer()) 
-        {
-            enemy.ChangeState(EnemyState.Wander);
-            return;
-        }
-
-        if (enemy.CanAttackPlayer())
-            enemy.ChangeState(EnemyState.Attack);
+        if(PlayerController.Player)
+            agent.SetDestination(PlayerController.Player.position);
     }
 }

@@ -2,40 +2,106 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
-using UnityEngine.InputSystem;
+using DG.Tweening;
+using UnityEditor.PackageManager.Requests;
+using System;
+using System.Linq;
+using static CameraShake;
 
-public class CameraShake : MonoBehaviour
+public class CameraShake : Singleton<CameraShake>
 {
+    public enum ShakeType { Recoil, Damage}
+
+    private CinemachineVirtualCamera cam;
     private CinemachineBasicMultiChannelPerlin channelPerlin;
-    private float shakeAmplitude = 0.1f;
-    private float shakeFrequency = 0.2f;
 
-    private void Awake()
+    private Dictionary<ShakeType, ShakeRequest> shakeRequests = new();
+
+    private float lastShakeAmplitude;
+    private float shakeDampingTime = 0;
+    private const float shakeDampingTotalTime = 0.1f;
+
+    protected override void Awake()
     {
-        channelPerlin = GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        base.Awake();
+
+        cam = GetComponent<CinemachineVirtualCamera>();
+        channelPerlin = cam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        InputManager.PlayerInputs.IsFiring.AddListener(PlayerInputs_IsFiring);
+        if (shakeRequests.Count == 0) 
+        {
+            if(channelPerlin.m_AmplitudeGain != 0) 
+            {
+                shakeDampingTime += Time.deltaTime;
+                channelPerlin.m_AmplitudeGain = Mathf.Lerp(lastShakeAmplitude, 0, Mathf.Clamp01(shakeDampingTime / shakeDampingTotalTime));
+            }
+            else 
+            {
+                shakeDampingTime = 0;
+            }
+
+            return;
+        }
+
+        foreach (var shakeRequest in shakeRequests.Values)
+        {
+            shakeRequest.Update(Time.deltaTime);
+        }
+
+        var strongestShake = shakeRequests.Values.Max(i => i.Intensity);
+        lastShakeAmplitude = strongestShake;
+        channelPerlin.m_AmplitudeGain = lastShakeAmplitude;
+
+        foreach (var shakeRequest in shakeRequests.Where(r => r.Value.MarkedForRemoval == true).ToList())
+        {
+            shakeRequests[shakeRequest.Key].Dispose();
+        }
     }
 
-    private void OnDisable()
+    public void RequestShake(ShakeType type ,float intensity, float time) 
     {
-        InputManager.PlayerInputs.IsFiring.RemoveListener(PlayerInputs_IsFiring);
+        if (!shakeRequests.ContainsKey(type)) 
+        {
+            var request = new ShakeRequest(intensity, time);
+            shakeRequests.Add(type, request);
+            request.OnDispose += _ => {
+                shakeRequests.Remove(type);
+            };
+        }
+        else 
+        {
+            var request = shakeRequests[type];
+            request.Intensity = intensity;
+            request.ShakeTimer.Reset(time);
+        }
+    }
+}
+
+public class ShakeRequest : IDisposable
+{
+    public float Intensity;
+    public CountdownTimer ShakeTimer;
+
+    public event Action<ShakeRequest> OnDispose;
+    public bool MarkedForRemoval {  get; set; }
+
+    public ShakeRequest(float intensity, float time) 
+    {
+        if (time < 0) return;
+
+        this.Intensity = intensity;
+        ShakeTimer = new CountdownTimer(time);
+        ShakeTimer.OnTimerStop += () => MarkedForRemoval = true;
+        ShakeTimer.Start();
     }
 
-    private void PlayerInputs_IsFiring(bool isShooting)
+    public void Dispose()
     {
-        if (isShooting) { ShakeCamera(shakeAmplitude, shakeFrequency); } else { StopCameraShake(); }
-    }
-    
-
-    private void ShakeCamera(float amplitude, float frequency)
-    {
-        channelPerlin.m_AmplitudeGain = amplitude;
-        channelPerlin.m_FrequencyGain = frequency;
+        OnDispose?.Invoke(this);
     }
 
-    private void StopCameraShake() => ShakeCamera(0, 0f);
+    public void Update(float deltaTime) => ShakeTimer?.Tick(deltaTime);
 }

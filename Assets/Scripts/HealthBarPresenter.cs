@@ -5,10 +5,11 @@ using UnityEngine.UI;
 
 public class HealthBarPresenter : MonoBehaviour
 {
-    [SerializeField] private Image image;
+    [SerializeField] private Renderer rend;
+    private static readonly string health = "_Health";
 
     public void UpdateHealthBar(float normalizedValue) 
     {
-        image.fillAmount = normalizedValue;
+        rend.material.SetFloat(health, normalizedValue);
     }
 }

@@ -6,12 +6,10 @@ using UnityEngine.AI;
 public class AttackState : EnemyBaseState
 {
     readonly NavMeshAgent agent;
-    readonly Transform player;
 
-    public AttackState(EnemyController enemy, UnitAnimationBehaviour animationBehaviour, NavMeshAgent agent, Transform player) : base(enemy, animationBehaviour)
+    public AttackState(EnemyController enemy, UnitAnimationBehaviour animationBehaviour, NavMeshAgent agent) : base(enemy, animationBehaviour)
     {
         this.agent = agent;
-        this.player = player;
     }
 
     public override void OnEnter()
@@ -28,8 +26,5 @@ public class AttackState : EnemyBaseState
     public override void Update()
     {
         enemy.Attack();
-
-        if (!enemy.CanAttackPlayer())
-            enemy.ChangeState(EnemyState.Wander);
     }
 }

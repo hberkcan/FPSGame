@@ -34,3 +34,15 @@ public class ProjectileFactory : PoolObjectFactory<Projectile>
     public override Projectile Spawn(PoolSettings<Projectile> settings) => GetPoolFor(settings)?.Get();
     public override void ReturnToPool(Projectile poolObject) => GetPoolFor(poolObject.Settings)?.Release(poolObject);
 }
+
+public class BulletTraceFactory : PoolObjectFactory<BulletTrace>
+{
+    public override BulletTrace Spawn(PoolSettings<BulletTrace> settings) => GetPoolFor(settings)?.Get();
+    public override void ReturnToPool(BulletTrace poolObject) => GetPoolFor(poolObject.Settings)?.Release(poolObject);
+}
+
+public class BulletImpactEffectFactory : PoolObjectFactory<BulletImpactEffect>
+{
+    public override BulletImpactEffect Spawn(PoolSettings<BulletImpactEffect> settings) => GetPoolFor(settings)?.Get();
+    public override void ReturnToPool(BulletImpactEffect poolObject) => GetPoolFor(poolObject.Settings)?.Release(poolObject);
+}

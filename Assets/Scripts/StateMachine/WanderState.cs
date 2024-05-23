@@ -13,7 +13,7 @@ public class WanderState : EnemyBaseState
     public WanderState(EnemyController enemy, UnitAnimationBehaviour animationBehaviour, NavMeshAgent agent, float wanderRadius) : base(enemy, animationBehaviour) 
     {
         this.agent = agent;
-        this.startPoint = enemy.transform.position;
+        startPoint = enemy.transform.position;
         this.wanderRadius = wanderRadius;
     }
 
@@ -21,37 +21,19 @@ public class WanderState : EnemyBaseState
     {
         agent.speed = enemy.Config.WalkSpeed;
         animationBehaviour.Walk();
-
-        var randomDirection = Random.insideUnitSphere * wanderRadius;
-        randomDirection += startPoint;
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
-        destination = hit.position;
-    }
-
-    public override void OnExit()
-    {
-        //
+        destination = GetRandomPoint();
     }
 
     public override void Update()
     {
         agent.SetDestination(destination);
-
-        if (enemy.CanDetectPlayer()) 
-        {
-            enemy.ChangeState(EnemyState.Chase);
-            return;
-        }
-
-        if (HasReachedDestination())
-            enemy.ChangeState(EnemyState.Linger);
     }
 
-    private bool HasReachedDestination()
+    private Vector3 GetRandomPoint()
     {
-        return !agent.pathPending
-                   && agent.remainingDistance <= agent.stoppingDistance
-                   && (!agent.hasPath || agent.velocity.sqrMagnitude == 0f);
+        var randomDirection = startPoint + Random.insideUnitSphere * wanderRadius;
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, 1);
+        return hit.position;
     }
 }

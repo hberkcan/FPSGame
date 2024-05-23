@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Gun : MonoBehaviour, IWeapon
 {
@@ -36,75 +33,103 @@ public class Gun : MonoBehaviour, IWeapon
         CanPierce = config.CanPierce;
     }
 
+    private float shootTime;
+
+    private void Update()
+    {
+        if (shootTime > 0)
+        {
+            float recoverySpeed = 0.35f;
+            shootTime -= Time.deltaTime * recoverySpeed;
+        }
+    }
     public void Use()
     {
+        if (shootTime < config.MaxSpreadTime)
+        {
+            shootTime += Time.deltaTime;
+        }
+
         if (Time.time >= nextTimeToFire && currentAmmo > 0)
         {
             nextTimeToFire = Time.time + 1f / config.FireRate;
 
             muzzleFlash.Play();
 
-            RaycastHit hit;
-            Vector3 shootDirection = shootPoint.forward;
-
-            if(useFPSCam) 
+            if (useFPSCam) 
             {
-                if (Physics.Raycast(fpsCam.position, fpsCam.forward, out hit, float.MaxValue, config.HitMask))
-                {
-                    Vector3 directionToHit = (hit.point - shootPoint.position).normalized;
-                    shootDirection = directionToHit;
-                }
+                Shoot(fpsCam);
+            }
+            else 
+            {
+                Shoot(shootPoint);
             }
 
-            transform.forward = Vector3.MoveTowards(transform.forward, shootDirection, 0.1f * Time.deltaTime);
+            if (!infiniteAmmo)
+                currentAmmo--;
 
-            LaunchNewProjectile(shootPoint.position, shootDirection);
-
-            currentAmmo--;
             OnShoot?.Invoke();
-
-            if (infiniteAmmo)
-                currentAmmo++;
         }
     }
 
-    private void LaunchNewProjectile(Vector3 origin, Vector3 direction)
+    private void Shoot(Transform shootOrigin) 
     {
-        Projectile projectile = Factory.Instance.ProjectileFactory.Spawn(config.ProjectileSettings);
-        projectile.Initialize(origin);
-        projectile.OnCollision = HandleProjectileCollision;
-        projectile.Launch(direction * config.BulletSpawnForce);
+        float maxTraceRange = 50f;
+        var trace = CreateBulletTrace(shootPoint.position);
+
+        Ray ray = new(shootOrigin.position, shootOrigin.forward);
+        RaycastHit hit;
+
+        if (RaycastSegment(ray, out hit))
+        {
+            trace.transform.position = hit.point;
+        }
+        else
+        {
+            trace.transform.position = shootOrigin.position + shootOrigin.forward * maxTraceRange;
+        }
     }
 
-    private void HandleProjectileCollision(Projectile projectile, Collision collision)
+    private bool RaycastSegment(Ray ray, out RaycastHit hit) 
     {
-        ContactPoint contactPoint = collision.GetContact(0);
+        if (Physics.Raycast(ray, out hit, float.MaxValue, config.HitMask))
+        {
+            HandleProjectileCollision(ray, hit);
+            return true;
+        }
 
-        if (contactPoint.otherCollider.TryGetComponent(out IDamagable damagable))
+        return false;
+    }
+
+    private BulletTrace CreateBulletTrace(Vector3 origin) 
+    {
+        var trace = Factory.Instance.BulletTraceFactory.Spawn(config.BulletTraceSettings);
+        trace.Initialize(origin);
+        return trace;
+    }
+
+    private void HandleProjectileCollision(Ray ray, RaycastHit hit)
+    {
+        if (hit.transform.TryGetComponent(out IDamagable damagable))
         {
             damagable.TakeDamage(damage);
-            projectile.ReturnToPool();
 
-            if (CanPierce) 
+            if (CanPierce)
             {
-                projectile.EntitiesPenetrated++;
-                Vector3 direction = -collision.impulse.normalized;
-                float penetrationOffset = 3f;
-                Vector3 newOrigin = contactPoint.point + direction * penetrationOffset;
-                LaunchNewProjectile(newOrigin, direction);
+                float pierceOffset = 1f;
+
+                Ray newRay = new(hit.point + ray.direction.normalized * pierceOffset, ray.direction);
+                RaycastSegment(newRay, out hit);
             }
         }
-        else 
-        {
-            projectile.ReturnToPool();
-        }
 
-        HandleProjectileImpact(contactPoint.point, contactPoint.normal);
+        HandleProjectileImpact(hit.point, hit.normal);
     }
 
     private void HandleProjectileImpact(Vector3 hitLocation, Vector3 hitNormal)
     {
-        Instantiate(config.ImpactEffect, hitLocation, Quaternion.LookRotation(hitNormal));
+        var impact = Factory.Instance.BulletImpactEffectFactory.Spawn(config.ImpactEffectSettings);
+        impact.Initialize(hitLocation);
     }
 
     public void AddAmmo(int amount)
@@ -116,4 +141,6 @@ public class Gun : MonoBehaviour, IWeapon
     public void UpgradeDamage(int amount) => damage += amount;
     public void UpgradeAmmoCapacity(int amount) => ammoCapacity += amount;
     public void SetDamage(int value) => damage = value;
+
+    public Vector3 Spread => config.GetSpread(shootTime);
 }

@@ -16,6 +16,6 @@ public class DeadState : EnemyBaseState
     {
         agent.enabled = false;
         animationBehaviour.Die();
-        Object.Destroy(enemy.gameObject, 2);
+        enemy.DestroyAfterDie();
     }
 }

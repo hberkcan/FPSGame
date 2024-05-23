@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06b1b59554cfb14db88e51405f16738, type: 3}
   m_Name: Bullet Settings
   m_EditorClassIdentifier: 
-  ID: 
+  ID: Basic
   prefab: {fileID: 5433066453270081045, guid: 65f52f11dc2c02f4bbe2590e5c332287, type: 3}
   collectionCheck: 1
   defaultCapacity: 100

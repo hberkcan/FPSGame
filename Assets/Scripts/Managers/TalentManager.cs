@@ -15,15 +15,15 @@ public class TalentManager : MonoBehaviour
 
     private void OnEnable()
     {
-        playerController.OnGetKill += PlayerController_OnGetKill;
+        PlayerController.OnLevelUp += PlayerController_OnLevelUp;
     }
 
     private void OnDisable()
     {
-        playerController.OnGetKill -= PlayerController_OnGetKill;
+        PlayerController.OnLevelUp -= PlayerController_OnLevelUp;
     }
 
-    private void PlayerController_OnGetKill()
+    private void PlayerController_OnLevelUp()
     {
         talentPoints++;
         talentTreeView.UpdateTalentPointsText(talentPoints);

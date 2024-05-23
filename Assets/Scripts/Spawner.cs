@@ -45,7 +45,7 @@ public class Spawner : MonoBehaviour
     {
         enemyTimer = new CountdownTimer(timeBetweenSpawns);
         enemyTimer.Start();
-        enemyCount = maxEnemyCount; // there are already 5 enemies on scene
+        enemyCount = 5; // there are 5 enemies on scene
         ammoTimer = new CountdownTimer(timeBetweenSpawns);
         ammoTimer.Start();
         healthTimer = new CountdownTimer(timeBetweenSpawns);

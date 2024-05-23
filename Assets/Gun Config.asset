@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa8268ae64316444cba6d9abbbb971d5, type: 3}
   m_Name: Gun Config
   m_EditorClassIdentifier: 
-  ProjectileSettings: {fileID: 11400000, guid: 956fac32c35fc4548b308675fdef3e41, type: 2}
-  BulletSpawnForce: 50
+  BulletTraceSettings: {fileID: 11400000, guid: cfcd59497212f1f44892d993e8ff53a6, type: 2}
   FireRate: 15
   AmmoCapacity: 120
   Damage: 10
@@ -21,4 +20,6 @@ MonoBehaviour:
   HitMask:
     serializedVersion: 2
     m_Bits: 961
-  ImpactEffect: {fileID: 100002, guid: 00fedc70b62a31e448e8ccc298257b56, type: 3}
+  ImpactEffectSettings: {fileID: 11400000, guid: cccdd86ab21ff13459be00b53e1ea63d, type: 2}
+  Spread: {x: -2, y: 2, z: 0.35}
+  MaxSpreadTime: 1
